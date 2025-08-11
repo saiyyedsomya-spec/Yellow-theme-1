@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PEARLORA - Luxury Handmade Handbags</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- Page base ---------- */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000;
+      color: gold;
+    }
+    header {
+      background-color: #111;
+      color: gold;
+      padding: 12px 18px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid gold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Header */
+    .logo img { height: 60px; display: block; border-radius: 8px; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .track-link { display:flex; align-items:center; gap:8px; text-decoration:none; color:gold; font-weight:600; font-size:16px; }
+    .track-link img { height:40px; width:40px; object-fit:contain; display:block; }
+    .cart-btn { background:none; border:none; position:relative; cursor:pointer; padding:0; display:inline-flex; align-items:center; }
+    .cart-btn img { height:44px; width:auto; display:block; }
+    #cartCount { position:absolute; top:-6px; right:-6px; background:red; color:white; font-size:14px; font-weight:bold; border-radius:50%; padding:3px 7px; line-height:1; }
+
+    /* ---------- Hero banner slider ---------- */
+    .hero-banner { width:100%; background-color:#000; padding:14px 0; display:flex; justify-content:center; align-items:center; }
+    .hero-banner img { max-width:95%; height:auto; border:2px solid gold; border-radius:12px; box-shadow:0 0 18px rgba(212,175,55,0.25); display:block; }
+
+    .hero-slider { position: relative; width: 100%; max-height: 450px; overflow: hidden; margin-top:6px; }
+    .hero-slider .slides { display:flex; transition: transform 0.5s ease-in-out; }
+    .hero-slider img { width:100%; height:450px; object-fit:cover; }
+    .hero-slider .prev, .hero-slider .next { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; padding:10px; cursor:pointer; font-size:24px; z-index:10; }
+    .hero-slider .prev { left:10px; } .hero-slider .next { right:10px; }
+
+    /* ---------- Headline ---------- */
+    .headline {
+      text-align: center;
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.8rem;
+      line-height: 1.4;
+      font-weight: normal;
+      background: linear-gradient(270deg, #ffdd44, #ffcc00, #d4af37, #fff5b7, #ffdd44);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: goldMove 5s ease infinite;
+      margin: 20px 0;
+    }
+    @keyframes goldMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+    /* ---------- Product grid & cards ---------- */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product-card {
+      background-color: #1a1a1a;
+      padding: 18px;
+      border: 2px solid gold;
+      text-align: center;
+      border-radius: 12px;
+      position: relative; /* for discount badge */
+      min-height: 320px;
+      box-sizing: border-box;
+      display:flex;
+      flex-direction:column;
+      justify-content: space-between;
+    }
+
+    .product-card img {
+      width: 100%;
+      max-height: 140px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      display:block;
+      margin: 8px auto 12px;
+      background: #222;
+    }
+
+    .product-card h3 {
+      margin: 6px 0;
+      font-size: 26px;
+      color: gold;
+    }
+    .price-wrap { margin: 6px 0 12px; }
+
+    .old-price {
+      text-decoration: line-through;
+      color: #aaa;
+      font-size: 14px;
+      display:block;
+    }
+
+    .new-price {
+      color: gold;
+      font-weight: bold;
+      font-size: 20px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      background: gold;
+      color: black;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    .details-btn {
+      background: transparent;
+      border: 1px solid gold;
+      color: gold;
+      padding: 8px 12px;
+      margin-top: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .details-btn:hover { background: gold; color: black; }
+
+    /* Discount Badge */
+    .discount-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: red;
+      color: white;
+      padding: 6px 9px;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 6px;
+      z-index: 5;
+    }
+
+    /* small responsive adjustments */
+    @media (max-width: 840px) {
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width:420px){
+      .hero-banner img { max-width: 98%; border-radius: 10px; }
+      .logo img { height: 46px; }
+      .track-link { font-size: 14px; }
+      .cart-btn img { height: 36px; }
+      .product-grid { gap: 12px; padding: 12px; }
+      .product-card { padding: 12px; border-radius: 10px; min-height: 300px; }
+      .product-card h3 { font-size: 22px; }
+    }
+
+    /* ---------- Cart Sidebar ---------- */
+    #cartSidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 320px;
+      height: 100%;
+      background-color: #111;
+      border-left: 2px solid gold;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+    }
+    #cartSidebar.open { transform: translateX(0%); }
+    .cart-item-card { display:flex; margin-bottom:15px; border-bottom:1px solid gold; padding-bottom:10px; }
+    .cart-item-card img { width:60px; height:60px; object-fit:cover; border-radius:6px; }
+    .cart-item-info { margin-left:10px; flex:1; color:gold; }
+    .qty-controls button { background: gold; color: black; border: none; padding: 4px 8px; margin: 0 6px; cursor: pointer; border-radius:4px; }
+    .remove-btn { background: red; color: white; border: none; padding: 6px 8px; font-size: 12px; margin-top: 6px; border-radius:6px; cursor:pointer; }
+
+    button.close-cart { background: red; color: white; border: none; padding: 6px 10px; float: right; cursor: pointer; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
+
+    #checkoutForm { margin-top: 20px; display: none; }
+    #checkoutForm input { display: block; width: 100%; padding: 8px; margin: 6px 0; border-radius: 6px; border: none; }
+
+    /* Thank you */
+    #thankYou { display:none; text-align:center; margin-top:50px; color:gold; animation: fadeIn 1s ease-in-out; }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+    /* Footer & modal (contact/shipping) */
+    .footer { background: #111; color: white; text-align: center; padding: 20px 10px; }
+    .footer button { background: linear-gradient(45deg, #d4af37, #ffd700); color: black; border: none; padding: 12px 20px; margin: 10px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; transition: transform 0.2s; }
+    .footer button:hover { transform: scale(1.05); }
+
+    .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); }
+    .modal-content { background: white; margin: 8% auto; padding: 20px; border-radius:15px; width:90%; max-width:500px; position:relative; color:#333; }
+    .close-btn { position:absolute; right:15px; top:10px; background:red; color:white; border:none; padding:5px 10px; border-radius:50%; cursor:pointer; }
+
+    /* ---------- Product Details Modal ---------- */
+    .product-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); }
+    .product-modal-content {
+      background: #1a1a1a;
+      color: gold;
+      padding: 20px;
+      border-radius: 12px;
+      width: 92%;
+      max-width: 540px;
+      margin: 6% auto;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .product-modal-content img { width: 100%; border-radius: 8px; margin-bottom: 12px; background:#222; }
+    .close-modal { position:absolute; right:12px; top:12px; background:red; color:white; border:none; padding:6px 10px; cursor:pointer; border-radius:6px; }
+
+    /* NEW: scrollable description inside modal */
+    #modalDescription {
+      max-height: 260px;   /* set desired height */
+      overflow-y: auto;
+      padding-right: 8px;  /* space for scrollbar */
+      line-height: 1.5;
+      color: #d0c08a;
+    }
+    /* optional: nicer small scrollbar for webkit */
+    #modalDescription::-webkit-scrollbar { width: 8px; }
+    #modalDescription::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.4); border-radius: 6px; }
+
+    /* ---------- Image Zoom Modal (NEW) ---------- */
+    .image-zoom-modal { display:none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.9); align-items:center; justify-content:center; }
+    .image-zoom-content { position: relative; max-width: 95%; max-height: 95%; padding: 12px; }
+    .image-zoom-content img { width: auto; max-width: 100%; max-height: 85vh; display:block; margin:0 auto; border-radius:8px; }
+    .image-zoom-close { position: absolute; top: -10px; right: -10px; background: red; color: white; border: none; padding: 8px 10px; border-radius: 50%; cursor: pointer; font-size: 18px; }
+
+    /* small hint text under image on mobile */
+    .zoom-hint { color: #ccc; text-align:center; margin-top:8px; font-size:13px; }
+
+  </style>
+</head>
+<body>
+  <!-- ---------- Header (unchanged layout) ---------- -->
+  <header>
+    <div class="logo">
+      <a href="index.html"><img src="pearlora-logo.jpg" alt="Pearlora Logo"></a>
+    </div>
+
+    <div class="header-right">
+      <a class="track-link" href="track.html">
+        <img src="Track.png" alt="Track">
+        <span>Track Order</span>
+      </a>
+
+      <button class="cart-btn" onclick="toggleCart()">
+        <img src="cart.png" alt="Cart">
+        <span id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ---------- Hero Slider (unchanged) ---------- -->
+  <div class="hero-slider">
+    <div class="slides">
+      <img src="prebooking.jpg" alt="Banner 1">
+      <img src="banner2.jpg" alt="Banner 2">
+      <img src="banner3.jpg" alt="Banner 3">
+      <img src="banner4.jpg" alt="Banner 4">
+      <img src="banner5.jpg" alt="Banner 5">
+      <img src="banner6.jpg" alt="Banner 6">
+      <img src="banner7.jpg" alt="Banner 7">
+      <img src="banner8.jpg" alt="Banner 8">
+      <img src="banner9.jpg" alt="Banner 9">
+      <img src="banner10.jpg" alt="Banner 10">
+      <img src="banner1.jpg" alt="Banner 1">
+      <img src="banner11.jpg" alt="Banner 11">
+      <img src="banner22.jpg" alt="Banner 12">
+      <img src="banner13.jpg" alt="Banner 13">
+      <img src="banner14.jpg" alt="Banner 14">
+      <img src="banner15.jpg" alt="Banner 15">
+      <img src="banner16.jpg" alt="Banner 16">
+      <img src="banner17.jpg" alt="Banner 17">
+      <img src="banner18.jpg" alt="Banner 18">
+      <img src="banner19.jpg" alt="Banner 19">
+      <img src="banner20.jpg" alt="Banner 20">
+      <img src="banner21.jpg" alt="Banner 21">
+      <img src="banner22.jpg" alt="Banner 22">
+      <img src="banner23.jpg" alt="Banner 23">
+    </div>
+
+    <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+    <button class="next" onclick="moveSlide(1)">&#10095;</button>
+  </div>
+
+  <!-- Slider JS -->
+  <script>
+    let slideIndex = 0;
+    const slides = document.querySelectorAll('.hero-slider .slides img');
+    const totalSlides = slides.length;
+    function showSlide(index) {
+      if (!slides.length) return;
+      if (index >= totalSlides) slideIndex = 0;
+      else if (index < 0) slideIndex = totalSlides - 1;
+      else slideIndex = index;
+      const offset = -slideIndex * 100;
+      document.querySelector('.hero-slider .slides').style.transform = `translateX(${offset}%)`;
+    }
+    function moveSlide(step) { showSlide(slideIndex + step); }
+    function autoSlide() { moveSlide(1); }
+    setInterval(autoSlide, 3000);
+    // initialize on DOMContentLoaded to ensure slides exist
+    document.addEventListener('DOMContentLoaded', function(){ showSlide(slideIndex); });
+  </script>
+
+  <!-- ---------- Headline ---------- -->
+  <div class="headline">
+    Unbeatable Deals on Your Favorites<br> Shop Now & Save Big!
+  </div>
+
+  <!-- ---------- Product Grid (will be filled by JS) ---------- -->
+  <div class="product-grid" id="productGrid"></div>
+
+  <!-- ---------- Cart Sidebar ---------- -->
+  <div id="cartSidebar">
+    <h3 style="color:gold;">Your Cart</h3>
+    <button onclick="toggleCart()" class="close-cart">❌ Close</button>
+    <div id="cartItems"></div>
+    <p style="color:gold;">Total: ₹<span id="totalPrice">0</span></p>
+    <button class="btn" onclick="showCheckout()">Proceed to Checkout</button>
+    <div id="checkoutForm">
+      <input type="text" id="name" placeholder="Name" required>
+      <input type="text" id="address" placeholder="Address" required>
+      <input type="text" id="pincode" placeholder="Pincode" required>
+      <input type="text" id="mobile" placeholder="Mobile" required>
+      <button class="btn" onclick="confirmPayment()">Confirm Payment</button>
+    </div>
+  </div>
+
+  <!-- ---------- Thank you ---------- -->
+  <div id="thankYou">
+    <h1 style="color:gold;">🎉 Thank you for your order!</h1>
+    <p style="color:gold;">Your order ID is: <strong id="orderId"></strong></p>
+  </div>
+
+  <!-- ---------- Product Details Modal (single reusable modal) ---------- -->
+  <div id="productModal" class="product-modal" aria-hidden="true">
+    <div class="product-modal-content" role="dialog" aria-modal="true">
+      <button class="close-modal" onclick="closeModal()">✖</button>
+      
+      <h2 id="modalTitle"></h2>
+      <p><span id="modalOldPrice" class="old-price"></span> &nbsp; <span id="modalNewPrice" class="new-price"></span></p>
+
+      <!-- SCROLLABLE DESCRIPTION AREA -->
+      <div id="modalDescription" aria-label="Product description">
+        <!-- dynamic description inserted here -->
+      </div>
+
+      <div style="text-align:center; margin-top:12px;">
+        <button class="btn" id="modalAddBtn">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Image Zoom Modal (NEW) ---------- -->
+  <div id="imageZoomModal" class="image-zoom-modal" aria-hidden="true">
+    <div class="image-zoom-content">
+      <button class="image-zoom-close" onclick="closeImageZoom()">✖</button>
+      <img id="zoomedImage" src="" alt="Zoomed Image">
+      <div class="zoom-hint">Tap outside or press ESC to close</div>
+    </div>
+  </div>
+
+  <!-- ---------- Contact & Shipping Modals (unchanged) ---------- -->
+  <div class="footer">
+    <button onclick="openModal('contactModal')">📩 Contact Us</button>
+    <button onclick="openModal('shippingModal')">📦 Shipping & Policy</button>
+  </div>
+
+  <div id="contactModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModalId('contactModal')">✖</button>
+      <h2>📩 Contact Us</h2>
+      <p><b>Email Support:</b> pearlorahandbag@gmail.com</p>
+      <p><b>Working Hours:</b> Mon–Sat, 10 AM – 6 PM</p>
+      <p><b>Response Time:</b> 24–48 hours</p>
+      <p><b>We help with:</b> Order Tracking, Product Info, Payments, Feedback</p>
+      <p><i>We value your feedback and are here to help you.</i></p>
+    </div>
+  </div>
+
+  <div id="shippingModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModalId('shippingModal')">✖</button>
+      <h2>📦 Shipping & Policy</h2>
+      <p><b>Delivery Time:</b> 5–7 working days</p>
+      <p><b>Cash on Delivery:</b> Not available</p>
+      <p><b>Order Tracking:</b> Available on our tracking page</p>
+      <p><b>Shipping Charges:</b> Free Shipping</p>
+      <p><b>Return Policy:</b> No returns unless product is damaged/defective</p>
+      <p><b>Order Updates:</b> Regular updates via Email/SMS</p>
+    </div>
+  </div>
+
+  <!-- ---------- Scripts: Product generation, cart & modal logic ---------- -->
+  <script>
+    // ---------- Cart storage ----------
+    let cart = [];
+
+    // Toggle cart sidebar
+    function toggleCart() {
+      document.getElementById('cartSidebar').classList.toggle('open');
+      updateCart();
+    }
+
+    // Add to cart (price in rupees)
+    function addToCart(id, name, price, image) {
+      const item = cart.find(p => p.id === id);
+      if (item) item.qty += 1;
+      else cart.push({ id, name, price, image, qty: 1 });
+      updateCart();
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(item => item.id !== id);
+      updateCart();
+    }
+
+    function increaseQty(id) {
+      const item = cart.find(p => p.id === id);
+      if (item) item.qty++;
+      updateCart();
+    }
+
+    function decreaseQty(id) {
+      const item = cart.find(p => p.id === id);
+      if (item && item.qty > 1) item.qty--;
+      updateCart();
+    }
+
+    function updateCart() {
+      const cartItems = document.getElementById('cartItems');
+      const totalPrice = document.getElementById('totalPrice');
+      cartItems.innerHTML = '';
+      let total = 0;
+
+      cart.forEach(item => {
+        total += item.price * item.qty;
+        cartItems.innerHTML += `
+          <div class="cart-item-card">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+              <h4 style="margin:0; color:gold;">${item.name}</h4>
+              <div style="margin-top:6px;">
+                <button onclick="decreaseQty('${item.id}')">-</button>
+                <span style="margin:0 8px; color:gold;">${item.qty}</span>
+                <button onclick="increaseQty('${item.id}')">+</button>
+              </div>
+              <p style="margin:6px 0; color:gold;">₹${item.price * item.qty}</p>
+              <button class="remove-btn" onclick="removeFromCart('${item.id}')">❌ Remove</button>
+            </div>
+          </div>
+        `;
+      });
+
+      totalPrice.textContent = total;
+      document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function showCheckout() { document.getElementById('checkoutForm').style.display = 'block'; }
+
+    function confirmPayment() {
+      const name = document.getElementById('name').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const pincode = document.getElementById('pincode').value.trim();
+      const mobile = document.getElementById('mobile').value.trim();
+
+      if (!name || !address || !pincode || !mobile) {
+        alert("Please fill all details.");
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const items = cart.map(item => `${item.name} x${item.qty}`).join(", ");
+      const orderId = "PLR" + Math.floor(Math.random() * 1000000);
+      document.getElementById('orderId').innerText = orderId;
+
+      // UPI deep link (opens UPI apps on mobile)
+      const upiUrl = `upi://pay?pa=9587736906@axl&pn=Pearlora&am=${total}&cu=INR`;
+      window.open(upiUrl, '_blank');
+
+      // Send order to Google Apps Script endpoint (same as your original)
+      fetch("https://script.google.com/macros/s/AKfycbzg6gSRI_10EwrlyZFJckZrq9MSiVIBxSX9mtZ-XHKivcf-1UjAPuzxgZIHcrQVLl6QvA/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, name, address, pincode, mobile, items, total })
+      })
+      .then(res => res.text())
+      .then(() => {
+        document.getElementById('cartSidebar').classList.remove('open');
+        document.getElementById('thankYou').style.display = 'block';
+        cart = [];
+        updateCart();
+      })
+      .catch(() => {
+        // still show thank you even if network fails (best effort)
+        document.getElementById('cartSidebar').classList.remove('open');
+        document.getElementById('thankYou').style.display = 'block';
+        cart = [];
+        updateCart();
+      });
+    }
+
+    // ---------- Product Details Modal logic ----------
+    function showDetails(name, image, oldPrice, newPrice, description, id) {
+      
+      document.getElementById('modalTitle').innerText = name;
+      document.getElementById('modalOldPrice').innerText = "₹" + oldPrice;
+      document.getElementById('modalNewPrice').innerText = "₹" + newPrice;
+      // put description into the scrollable div
+      document.getElementById('modalDescription').innerHTML = description;
+      // set add to cart inside modal
+      const modalAddBtn = document.getElementById('modalAddBtn');
+      modalAddBtn.onclick = function() {
+        addToCart(id, name, newPrice, image);
+        closeModal();
+      };
+      document.getElementById('productModal').style.display = 'block';
+      document.getElementById('productModal').setAttribute('aria-hidden', 'false');
+
+      // optional: focus handling for accessibility
+      document.getElementById('modalAddBtn').focus();
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').style.display = 'none';
+      document.getElementById('productModal').setAttribute('aria-hidden', 'true');
+    }
+
+    // allow closing modal with ESC
+    document.addEventListener('keydown', function(e){
+      if(e.key === "Escape") {
+        closeModal();
+        closeImageZoom();
+      }
+    });
+
+    // ---------- Contact & shipping modal helpers ----------
+    function openModal(id) { document.getElementById(id).style.display = "block"; }
+    function closeModalId(id) { document.getElementById(id).style.display = "none"; }
+    window.onclick = function(event) {
+      document.querySelectorAll('.modal').forEach(function(modal) {
+        if (event.target == modal) modal.style.display = "none";
+      });
+      // If click outside product modal content, close it
+      const pm = document.getElementById('productModal');
+      if (event.target == pm) closeModal();
+
+      // If click outside image zoom content, close it
+      const iz = document.getElementById('imageZoomModal');
+      if (event.target == iz) closeImageZoom();
+    };
+
+    // ---------- Image zoom functions (NEW) ----------
+    function openImageZoom(src, alt) {
+      const modal = document.getElementById('imageZoomModal');
+      const img = document.getElementById('zoomedImage');
+      img.src = src;
+      img.alt = alt || 'Product image';
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+      // prevent background scroll when open
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageZoom() {
+      const modal = document.getElementById('imageZoomModal');
+      const img = document.getElementById('zoomedImage');
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+      img.src = '';
+      document.body.style.overflow = '';
+    }
+
+    // ---------- Generate 30 product cards ---------- 
+    // Product data template - you can extend description per-product if needed
+    const productGrid = document.getElementById('productGrid');
+    for (let i = 1; i <= 30; i++) {
+      // Per your request price is shown as 1 (old 1600)
+      const id = 'p' + i;
+      const name = `Product ${i}`;
+      const image = `images/p${i}.jpg`;
+      const oldPrice = 1600;
+      const newPrice = 1;
+      // sample dynamic description (customize as needed)
+      const description = `
+       
+       
+        ✨ <em><b>90% OFF</b> - Limited Time Offer</em><br>
+        ✅ Free Shipping · Secure Payment · <b>1 Days Replacement</b> (for manufacturing defects only)<br>
+        <br>
+        <b>Product Details:</b> Product Description:-
+Add a timeless touch of elegance to your outfit with this luxury handmade pearl handbag, crafted with premium-quality artificial pearls that radiate a soft, lustrous glow. Designed for parties, weddings, and special occasions, this bag blends sophistication with practicality. Its compact yet spacious design is perfect for carrying your essentials such as phone, makeup, and keys, while the soft satin lining ensures they remain safe and scratch-free.
+        <br><br>
+        <b>Features:</b> 👉Material:High-quality artificial pearls, soft satin inner lining, durable metal frame
+👉Handle:Comfortable pearl-beaded top handle for easy grip
+👉Closure Type: Secure magnetic snap or clasp (depending on model)
+👉Color: Classic pearls with subtle sheen<b>
+👉Size: Approx. 20 cm (Length) × 12 cm (Height) × 7 cm (Width)
+👉Weight: Lightweight for comfortable all-day carrying
+👉Style:-Elegant, vintage-inspired design with a modern twist
+👉Ideal For:Weddings, parties, evening outings, bridal accessories, estive events
+👉 Care Instructions:Wipe gently with a soft, dry cloth. Avoid contact with water and harsh chemicals to maintain pearl shine.
+<b>Why You’ll Love It:</b>This pearl handbag is more than just an accessory—it’s a statement piece that adds charm and grace to any look. Whether paired with an evening gown or a chic cocktail dress, it will make you stand out effortlessly.
+      `;
+
+      // create card HTML
+      productGrid.innerHTML += `
+        <div class="product-card">
+          <span class="discount-badge">90% OFF</span>
+          <!-- IMAGE CLICK NOW OPENS ZOOM (instead of directly adding to cart) -->
+          <img src="${image}" alt="${name}" onclick="openImageZoom('${image}', '${name}')">
+          <div>
+            <h3>${name}</h3>
+            <div class="price-wrap">
+              <span class="old-price">₹${oldPrice}</span>
+              <span class="new-price">₹${newPrice}</span>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px; flex-direction:column; margin-top:6px;">
+            <button class="details-btn" onclick="showDetails('${name}', '${image}', ${oldPrice}, ${newPrice}, \`${description}\`, '${id}')">Details</button>
+            <button class="btn" onclick="addToCart('${id}','${name}', ${newPrice}, '${image}')">Add to Cart</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // initialize cart badge and total on load
+    document.addEventListener('DOMContentLoaded', updateCart);
+  </script>
+
+  <!-- ---------- Footer & small scripts already included above ---------- -->
+
+  <script>
+    // Keep previous slider initialization safety (some browsers may have run earlier)
+    document.addEventListener('DOMContentLoaded', function(){
+      // nothing more needed here for now
+    });
+  </script>
+</body>
+</html>

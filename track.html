@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Your PEARLORA Order</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: black;
+      color: gold;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      width: 250px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      background: gold;
+      color: black;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .progress {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .step {
+      padding: 10px;
+      margin: 5px;
+      border: 2px solid gold;
+      border-radius: 5px;
+      width: 100px;
+    }
+    .active {
+      background: gold;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <h1>Track Your Order</h1>
+  <input type="text" id="trackId" placeholder="Enter Order ID">
+  <br>
+  <button onclick="trackOrder()">Track</button>
+  <div id="status"></div>
+  <div class="progress" id="progressBar"></div>
+<!-- Close Button -->
+<button onclick="window.history.back()" 
+  style="position: fixed; top: 15px; right: 15px; padding: 8px 12px; 
+         background: red; color: white; border: none; border-radius: 5px; 
+         cursor: pointer; font-size: 16px; z-index: 999;">
+  ❌ Close
+</button>
+  <script>
+    function trackOrder() {
+      const orderId = document.getElementById("trackId").value.trim();
+      if (!orderId) {
+        alert("Please enter your order ID.");
+        return;
+      }
+
+      fetch(`https://script.google.com/macros/s/AKfycbzg6gSRI_10EwrlyZFJckZrq9MSiVIBxSX9mtZ-XHKivcf-1UjAPuzxgZIHcrQVLl6QvA/exec?orderId=${orderId}`)
+
+        .then(res => res.json())
+        .then(data => {
+          if (!data || !data.status) {
+            document.getElementById("status").innerHTML = "<p>❌ Order not found.</p>";
+            document.getElementById("progressBar").innerHTML = "";
+            return;
+          }
+
+          document.getElementById("status").innerHTML = `<h3>Status: ${data.status}</h3>`;
+
+          const steps = ["Shipping", "Packed", "Delivered"];
+          document.getElementById("progressBar").innerHTML = steps.map(step =>
+            `<div class="step ${steps.indexOf(step) <= steps.indexOf(data.status) ? 'active' : ''}">${step}</div>`
+          ).join("");
+        })
+        .catch(() => {
+          document.getElementById("status").innerHTML = "<p>⚠️ Error fetching status.</p>";
+        });
+    }
+  </script>
+</body>
+</html>
