@@ -314,7 +314,6 @@
     function moveSlide(step) { showSlide(slideIndex + step); }
     function autoSlide() { moveSlide(1); }
     setInterval(autoSlide, 3000);
-    // initialize on DOMContentLoaded to ensure slides exist
     document.addEventListener('DOMContentLoaded', function(){ showSlide(slideIndex); });
   </script>
 
@@ -357,9 +356,7 @@
       <p><span id="modalOldPrice" class="old-price"></span> &nbsp; <span id="modalNewPrice" class="new-price"></span></p>
 
       <!-- SCROLLABLE DESCRIPTION AREA -->
-      <div id="modalDescription" aria-label="Product description">
-        <!-- dynamic description inserted here -->
-      </div>
+      <div id="modalDescription" aria-label="Product description"></div>
 
       <div style="text-align:center; margin-top:12px;">
         <button class="btn" id="modalAddBtn">Add to Cart</button>
@@ -373,6 +370,20 @@
       <button class="image-zoom-close" onclick="closeImageZoom()">✖</button>
       <img id="zoomedImage" src="" alt="Zoomed Image">
       <div class="zoom-hint">Tap outside or press ESC to close</div>
+    </div>
+  </div>
+
+  <!-- ---------- QR Payment Modal (NEW) ---------- -->
+  <div id="qrModal" class="modal" aria-hidden="true">
+    <div class="modal-content" style="text-align:center;">
+      <button class="close-btn" onclick="closeModalId('qrModal')">✖</button>
+      <h2 style="color:black;">Scan to Pay</h2>
+      <p style="color:black;">Use any UPI app (GPay/PhonePe/Paytm/BHIM) to scan this code.</p>
+      <div id="qrcode" style="display:flex; justify-content:center;"></div>
+      <p style="margin-top:10px; font-size:14px; color:black;">
+        Amount: ₹<span id="qrAmount"></span><br>
+        UPI ID: <b>saiyyed786heena@okaxis</b>
+      </p>
     </div>
   </div>
 
@@ -406,6 +417,9 @@
       <p><b>Order Updates:</b> Regular updates via Email/SMS</p>
     </div>
   </div>
+
+  <!-- ---------- QRCode library ---------- -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <!-- ---------- Scripts: Product generation, cart & modal logic ---------- -->
   <script>
@@ -474,6 +488,7 @@
 
     function showCheckout() { document.getElementById('checkoutForm').style.display = 'block'; }
 
+    // ---------- QR payment + Google Sheet save ----------
     function confirmPayment() {
       const name = document.getElementById('name').value.trim();
       const address = document.getElementById('address').value.trim();
@@ -484,174 +499,11 @@
         alert("Please fill all details.");
         return;
       }
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
 
       const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
       const items = cart.map(item => `${item.name} x${item.qty}`).join(", ");
-      const orderId = "PLR" + Math.floor(Math.random() * 1000000);
-      document.getElementById('orderId').innerText = orderId;
-
-      // UPI deep link (opens UPI apps on mobile)
-      const upiUrl = `upi://pay?pa=9024827631@okbizaxis&pn=Pearlora&am=${total}&cu=INR`;
-      window.open(upiUrl, '_blank');
-
-      // Send order to Google Apps Script endpoint (same as your original)
-      fetch("https://script.google.com/macros/s/AKfycbzg6gSRI_10EwrlyZFJckZrq9MSiVIBxSX9mtZ-XHKivcf-1UjAPuzxgZIHcrQVLl6QvA/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, name, address, pincode, mobile, items, total })
-      })
-      .then(res => res.text())
-      .then(() => {
-        document.getElementById('cartSidebar').classList.remove('open');
-        document.getElementById('thankYou').style.display = 'block';
-        cart = [];
-        updateCart();
-      })
-      .catch(() => {
-        // still show thank you even if network fails (best effort)
-        document.getElementById('cartSidebar').classList.remove('open');
-        document.getElementById('thankYou').style.display = 'block';
-        cart = [];
-        updateCart();
-      });
-    }
-
-    // ---------- Product Details Modal logic ----------
-    function showDetails(name, image, oldPrice, newPrice, description, id) {
-      
-      document.getElementById('modalTitle').innerText = name;
-      document.getElementById('modalOldPrice').innerText = "₹" + oldPrice;
-      document.getElementById('modalNewPrice').innerText = "₹" + newPrice;
-      // put description into the scrollable div
-      document.getElementById('modalDescription').innerHTML = description;
-      // set add to cart inside modal
-      const modalAddBtn = document.getElementById('modalAddBtn');
-      modalAddBtn.onclick = function() {
-        addToCart(id, name, newPrice, image);
-        closeModal();
-      };
-      document.getElementById('productModal').style.display = 'block';
-      document.getElementById('productModal').setAttribute('aria-hidden', 'false');
-
-      // optional: focus handling for accessibility
-      document.getElementById('modalAddBtn').focus();
-    }
-
-    function closeModal() {
-      document.getElementById('productModal').style.display = 'none';
-      document.getElementById('productModal').setAttribute('aria-hidden', 'true');
-    }
-
-    // allow closing modal with ESC
-    document.addEventListener('keydown', function(e){
-      if(e.key === "Escape") {
-        closeModal();
-        closeImageZoom();
-      }
-    });
-
-    // ---------- Contact & shipping modal helpers ----------
-    function openModal(id) { document.getElementById(id).style.display = "block"; }
-    function closeModalId(id) { document.getElementById(id).style.display = "none"; }
-    window.onclick = function(event) {
-      document.querySelectorAll('.modal').forEach(function(modal) {
-        if (event.target == modal) modal.style.display = "none";
-      });
-      // If click outside product modal content, close it
-      const pm = document.getElementById('productModal');
-      if (event.target == pm) closeModal();
-
-      // If click outside image zoom content, close it
-      const iz = document.getElementById('imageZoomModal');
-      if (event.target == iz) closeImageZoom();
-    };
-
-    // ---------- Image zoom functions (NEW) ----------
-    function openImageZoom(src, alt) {
-      const modal = document.getElementById('imageZoomModal');
-      const img = document.getElementById('zoomedImage');
-      img.src = src;
-      img.alt = alt || 'Product image';
-      modal.style.display = 'flex';
-      modal.setAttribute('aria-hidden', 'false');
-      // prevent background scroll when open
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeImageZoom() {
-      const modal = document.getElementById('imageZoomModal');
-      const img = document.getElementById('zoomedImage');
-      modal.style.display = 'none';
-      modal.setAttribute('aria-hidden', 'true');
-      img.src = '';
-      document.body.style.overflow = '';
-    }
-
-    // ---------- Generate 30 product cards ---------- 
-    // Product data template - you can extend description per-product if needed
-    const productGrid = document.getElementById('productGrid');
-    for (let i = 1; i <= 30; i++) {
-      // Per your request price is shown as 1 (old 1600)
-      const id = 'p' + i;
-      const name = `Product ${i}`;
-      const image = `p${i}.jpg`;
-      const oldPrice = 1600;
-      const newPrice = 1;
-      // sample dynamic description (customize as needed)
-      const description = `
-       
-       
-        ✨ <em><b>90% OFF</b> - Limited Time Offer</em><br>
-        ✅ Free Shipping · Secure Payment · <b>1 Days Replacement</b> (for manufacturing defects only)<br>
-        <br>
-        <b>Product Details:</b> Product Description:-
-Add a timeless touch of elegance to your outfit with this luxury handmade pearl handbag, crafted with premium-quality artificial pearls that radiate a soft, lustrous glow. Designed for parties, weddings, and special occasions, this bag blends sophistication with practicality. Its compact yet spacious design is perfect for carrying your essentials such as phone, makeup, and keys, while the soft satin lining ensures they remain safe and scratch-free.
-        <br><br>
-        <b>Features:</b> 👉Material:High-quality artificial pearls, soft satin inner lining, durable metal frame
-👉Handle:Comfortable pearl-beaded top handle for easy grip
-👉Closure Type: Secure magnetic snap or clasp (depending on model)
-👉Color: Classic pearls with subtle sheen<b>
-👉Size: Approx. 20 cm (Length) × 12 cm (Height) × 7 cm (Width)
-👉Weight: Lightweight for comfortable all-day carrying
-👉Style:-Elegant, vintage-inspired design with a modern twist
-👉Ideal For:Weddings, parties, evening outings, bridal accessories, estive events
-👉 Care Instructions:Wipe gently with a soft, dry cloth. Avoid contact with water and harsh chemicals to maintain pearl shine.
-<b>Why You’ll Love It:</b>This pearl handbag is more than just an accessory—it’s a statement piece that adds charm and grace to any look. Whether paired with an evening gown or a chic cocktail dress, it will make you stand out effortlessly.
-      `;
-
-      // create card HTML
-      productGrid.innerHTML += `
-        <div class="product-card">
-          <span class="discount-badge">90% OFF</span>
-          <!-- IMAGE CLICK NOW OPENS ZOOM (instead of directly adding to cart) -->
-          <img src="${image}" alt="${name}" onclick="openImageZoom('${image}', '${name}')">
-          <div>
-            <h3>${name}</h3>
-            <div class="price-wrap">
-              <span class="old-price">₹${oldPrice}</span>
-              <span class="new-price">₹${newPrice}</span>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:8px; flex-direction:column; margin-top:6px;">
-            <button class="details-btn" onclick="showDetails('${name}', '${image}', ${oldPrice}, ${newPrice}, \`${description}\`, '${id}')">Details</button>
-            <button class="btn" onclick="addToCart('${id}','${name}', ${newPrice}, '${image}')">Add to Cart</button>
-          </div>
-        </div>
-      `;
-    }
-
-    // initialize cart badge and total on load
-    document.addEventListener('DOMContentLoaded', updateCart);
-  </script>
-
-  <!-- ---------- Footer & small scripts already included above ---------- -->
-
-  <script>
-    // Keep previous slider initialization safety (some browsers may have run earlier)
-    document.addEventListener('DOMContentLoaded', function(){
-      // nothing more needed here for now
-    });
-  </script>
-</body>
-</html>
+      const orderId 
